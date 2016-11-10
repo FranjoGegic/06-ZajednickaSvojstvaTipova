@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace Vsite.CSharp
 {
     //  Definirati da klasa Osoba implementira sučelje IEquatable<Osoba>
-    public class Osoba : IEquatable<Osoba>
+    public class Osoba : IEquatable<Osoba>, ICloneable
     {
         public Osoba(string ime, int matičniBroj)
         {
@@ -21,9 +21,9 @@ namespace Vsite.CSharp
             if (other == null)
                 return false;
             if (m_matičniBroj != other.m_matičniBroj)
-                return false;
+            { return false; }
             return object.Equals(m_ime, other.m_ime);
-            //OPASNO: return m_ime.Equals(other.m_ime);
+            //OPASNO return m_ime.Equals(other.m_ime);
         }
 
         //  Pregaziti (override) metodu Equals(object) tako da poziva Equals(Osoba)
@@ -33,17 +33,32 @@ namespace Vsite.CSharp
                 return false;
             if (GetType() != obj.GetType())
                 return false;
-
             return Equals((Osoba)obj);
         }
 
+        public static bool operator ==(Osoba a, Osoba b)
+        {
+            return Osoba.Equals(a, b);
+        }
+        public static bool operator !=(Osoba a, Osoba b)
+        {
+            return !(a == b);
+        }
 
         public override string ToString()
         {
             return string.Format("'{0}, {1}'", m_ime, m_matičniBroj);
         }
 
+        public override int GetHashCode()
+        {
+            return m_ime.GetHashCode() ^ m_matičniBroj;
+        }
 
+        public object Clone()
+        {
+            return new Osoba(m_ime, m_matičniBroj);
+        }
     }
 
     public class MetodaEqualsZaReferentniTip
